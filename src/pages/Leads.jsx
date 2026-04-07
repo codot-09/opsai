@@ -97,8 +97,8 @@ export default function Leads() {
       <div className="grid gap-4 md:grid-cols-[1.3fr_0.7fr]">
         <div className="space-y-3">
           <p className="text-sm uppercase tracking-[0.24em] text-white/40">Leads</p>
-          <h2 className="text-3xl font-semibold tracking-tight">Pipeline overview</h2>
-          <p className="max-w-2xl text-white/60">Search and review leads from your Supabase database.</p>
+          <h2 className="text-3xl font-semibold tracking-tight text-black">Pipeline overview</h2>
+          <p className="max-w-2xl text-gray-600">Search and review leads from your Supabase database.</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <Card title="Total leads" value={leads.length} />
@@ -107,46 +107,46 @@ export default function Leads() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-4">
-          <p className="text-sm uppercase tracking-[0.24em] text-white/40">Search</p>
+        <div className="rounded-2xl border border-gray-200 bg-white p-4">
+          <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Search</p>
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Name or phone"
-            className="mt-3 w-full rounded-3xl border border-white/10 bg-black/90 px-4 py-3 text-white outline-none transition focus:border-white/20"
+            className="mt-3 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-black outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           />
         </div>
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-4">
-          <p className="text-sm uppercase tracking-[0.24em] text-white/40">Status</p>
+        <div className="rounded-2xl border border-gray-200 bg-white p-4">
+          <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Status</p>
           <input
             value={statusQuery}
             onChange={(event) => setStatusQuery(event.target.value)}
             placeholder="e.g. Interested"
-            className="mt-3 w-full rounded-3xl border border-white/10 bg-black/90 px-4 py-3 text-white outline-none transition focus:border-white/20"
+            className="mt-3 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-black outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           />
         </div>
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-4">
-          <p className="text-sm uppercase tracking-[0.24em] text-white/40">Interest</p>
+        <div className="rounded-2xl border border-gray-200 bg-white p-4">
+          <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Interest</p>
           <input
             value={interestQuery}
             onChange={(event) => setInterestQuery(event.target.value)}
             placeholder="e.g. Growth"
-            className="mt-3 w-full rounded-3xl border border-white/10 bg-black/90 px-4 py-3 text-white outline-none transition focus:border-white/20"
+            className="mt-3 w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-black outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           />
         </div>
       </div>
 
       <Table title="Lead list" subtitle="Sorted by newest first">
         {loading ? (
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-white/60">Loading leads...</div>
+          <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center text-gray-600">Loading leads...</div>
         ) : error ? (
-          <div className="rounded-3xl border border-red-500/20 bg-red-500/10 p-8 text-center text-red-200">{error}</div>
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center text-red-700">{error}</div>
         ) : paginatedLeads.length === 0 ? (
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-white/60">No leads found.</div>
+          <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center text-gray-600">No leads found.</div>
         ) : (
-          <table className="min-w-full text-left text-sm text-white/70">
+          <table className="min-w-full text-left text-sm text-gray-700">
             <thead>
-              <tr className="border-b border-white/10 text-white/60">
+              <tr className="border-b border-gray-200 text-gray-600">
                 <th className="px-4 py-4">Name</th>
                 <th className="px-4 py-4">Interest</th>
                 <th className="px-4 py-4">Status</th>
@@ -158,8 +158,8 @@ export default function Leads() {
             </thead>
             <tbody>
               {paginatedLeads.map((lead) => (
-                <tr key={lead.id} className="border-b border-white/10 transition hover:bg-white/5">
-                  <td className="px-4 py-4 font-medium text-white">{lead.name || '—'}</td>
+                <tr key={lead.id} className="border-b border-gray-200 transition hover:bg-gray-50">
+                  <td className="px-4 py-4 font-medium text-black">{lead.name || '—'}</td>
                   <td className="px-4 py-4">{lead.interest || '—'}</td>
                   <td className="px-4 py-4">
                     <StatusBadge
@@ -174,14 +174,14 @@ export default function Leads() {
                     />
                   </td>
                   <td className="px-4 py-4">telegram</td>
-                  <td className="px-4 py-4 text-white/50">{new Date(lead.created_at || Date.now()).toLocaleDateString()}</td>
+                  <td className="px-4 py-4 text-gray-500">{new Date(lead.created_at || Date.now()).toLocaleDateString()}</td>
                   <td className="px-4 py-4">
                     <button
                       onClick={() => setChatLead(lead)}
-                      className="p-2 rounded-full hover:bg-white/5 transition"
+                      className="p-2 rounded-full hover:bg-gray-100 transition"
                       title="Open Chat"
                     >
-                      <MessageCircle className="w-4 h-4 text-white/60" />
+                      <MessageCircle className="w-4 h-4 text-gray-600" />
                     </button>
                   </td>
                 </tr>
@@ -191,14 +191,14 @@ export default function Leads() {
         )}
       </Table>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-white/60">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-4 text-sm text-gray-600">
         <span>{filteredLeads.length} total leads</span>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setPage((value) => Math.max(1, value - 1))}
             disabled={currentPage === 1}
-            className="rounded-full border border-white/10 bg-black/90 px-4 py-2 transition hover:border-white/20 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-full border border-gray-300 bg-white px-4 py-2 text-gray-700 transition hover:border-gray-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Prev
           </button>
@@ -207,7 +207,7 @@ export default function Leads() {
             type="button"
             onClick={() => setPage((value) => Math.min(pageCount, value + 1))}
             disabled={currentPage === pageCount}
-            className="rounded-full border border-white/10 bg-black/90 px-4 py-2 transition hover:border-white/20 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-full border border-gray-300 bg-white px-4 py-2 text-gray-700 transition hover:border-gray-400 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Next
           </button>

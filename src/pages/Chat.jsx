@@ -18,7 +18,8 @@ export default function Chat() {
         .from('commands')
         .select('*')
         .gte('created_at', today.toISOString())
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: true });
+
       if (fetchError) {
         console.error('Error fetching commands:', fetchError);
         setError(fetchError.message);
@@ -39,7 +40,6 @@ export default function Chat() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Subscribe to commands changes
     const commandsChannel = supabase
       .channel('commands_changes')
       .on(
@@ -52,7 +52,7 @@ export default function Chat() {
         },
         (payload) => {
           if (payload.eventType === 'INSERT') {
-            setCommands((prev) => [payload.new, ...prev]);
+            setCommands((prev) => [...prev, payload.new]);
           } else if (payload.eventType === 'UPDATE') {
             setCommands((prev) =>
               prev.map((cmd) => (cmd.id === payload.new.id ? payload.new : cmd))
@@ -96,7 +96,6 @@ export default function Chat() {
       if (!response.ok) {
         console.error('Failed to submit command');
       }
-      // Supabase will handle the UI update
     } catch (error) {
       console.error('Error submitting command:', error);
     }
@@ -106,29 +105,25 @@ export default function Chat() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="min-h-full flex flex-col"
+      className="min-h-full flex flex-col bg-white text-gray-900"
     >
-      <div className="flex-1 flex flex-col max-w-6xl mx-auto px-4 py-8">
-        <div className="space-y-3 mb-8">
-          <p className="text-sm uppercase tracking-[0.24em] text-white/40">Chat</p>
-          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h2 className="text-3xl font-semibold tracking-tight">OpsAI Command Center</h2>
-              <p className="max-w-2xl text-white/60">Control your AI system with natural language commands</p>
-            </div>
-          </div>
+      <div className="flex-1 flex flex-col max-w-6xl mx-auto px-4 py-6">
+        <div className="mb-6">
+          <p className="text-xs uppercase tracking-[0.28em] text-gray-500">Chat</p>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-gray-900">AI command stream</h1>
+          <p className="mt-2 max-w-2xl text-sm text-gray-600">Type a command below and tap AI responses to inspect task progress.</p>
         </div>
 
-        <div className="flex-1 overflow-y-auto space-y-6 pb-24">
+        <div className="flex-1 overflow-y-auto space-y-4 pb-6">
           {loading ? (
-            <div className="text-center text-white/60 py-8">Loading today's commands...</div>
+            <div className="text-center text-gray-600 py-10">Loading today's commands...</div>
           ) : error ? (
-            <div className="text-center text-red-400 py-8">
+            <div className="text-center text-red-600 py-10">
               <p className="text-lg font-medium">Something went wrong</p>
               <p className="text-sm mt-2">{error}</p>
             </div>
           ) : commands.length === 0 ? (
-            <div className="text-center text-white/60 py-8">No commands today. Start by typing a command below.</div>
+            <div className="text-center text-gray-600 py-10">No commands yet. Enter your first command below.</div>
           ) : (
             commands.map((command) => (
               <CommandThread key={command.id} command={command} />
@@ -137,7 +132,7 @@ export default function Chat() {
         </div>
       </div>
 
-      <div className="sticky bottom-0 bg-black border-t border-white/10 p-4">
+      <div className="sticky bottom-0 z-10 border-t border-gray-200 bg-white px-4 py-4">
         <div className="max-w-6xl mx-auto">
           <CommandInput onSubmit={handleCommandSubmit} />
         </div>

@@ -39,7 +39,7 @@ export default function ChatPanel({ lead }) {
 
   if (!lead) {
     return (
-      <div className="flex items-center justify-center h-full text-white/60">
+      <div className="flex items-center justify-center h-full text-gray-600">
         Select a lead to view conversation
       </div>
     );
@@ -47,24 +47,24 @@ export default function ChatPanel({ lead }) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between p-4 border-b border-white/10 bg-black">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
         <div>
-          <h3 className="text-lg font-semibold text-white">{lead.name}</h3>
-          <span className="text-sm text-white/60">{lead.status}</span>
+          <h3 className="text-lg font-semibold text-black">{lead.name}</h3>
+          <span className="text-sm text-gray-600">{lead.status}</span>
         </div>
         <button
           onClick={fetchMessages}
-          className="p-2 rounded-full hover:bg-white/5 transition"
+          className="p-2 rounded-full hover:bg-gray-100 transition"
           title="Refresh"
         >
-          <RefreshCw className="w-4 h-4 text-white/60" />
+          <RefreshCw className="w-4 h-4 text-gray-600" />
         </button>
       </div>
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {loading ? (
-          <div className="text-center text-white/60">Loading messages...</div>
+          <div className="text-center text-gray-600">Loading messages...</div>
         ) : messages.length === 0 ? (
-          <div className="text-center text-white/60">No messages yet</div>
+          <div className="text-center text-gray-600">No messages yet</div>
         ) : (
           messages.map((msg) => (
             <MessageBubble key={msg.id} message={msg} />

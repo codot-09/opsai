@@ -44,9 +44,9 @@ export default function LeadList({ onSelectLead, selectedLead }) {
 
   return (
     <div className="p-4">
-      <h2 className="text-lg font-semibold text-white mb-4">Leads</h2>
+      <h2 className="text-lg font-semibold text-black mb-4">Leads</h2>
       {loading ? (
-        <div className="text-white/60">Loading leads...</div>
+        <div className="text-gray-600">Loading leads...</div>
       ) : (
         <div className="space-y-2">
           {leads.map((lead) => (
@@ -54,12 +54,12 @@ export default function LeadList({ onSelectLead, selectedLead }) {
               key={lead.id}
               onClick={() => onSelectLead(lead)}
               className={`p-3 rounded-lg cursor-pointer transition ${
-                selectedLead?.id === lead.id ? 'bg-white/10' : 'hover:bg-white/5'
+                selectedLead?.id === lead.id ? 'bg-blue-50 border border-blue-200' : 'hover:bg-gray-50'
               }`}
             >
-              <div className="font-medium text-white">{lead.name || 'Unknown'}</div>
-              <div className="text-sm text-white/60">{lead.interest || 'No interest'}</div>
-              <div className="text-xs text-white/40 truncate">{lastMessages[lead.id] || 'No messages'}</div>
+              <div className="font-medium text-black">{lead.name || 'Unknown'}</div>
+              <div className="text-sm text-gray-600">{lead.interest || 'No interest'}</div>
+              <div className="text-xs text-gray-500 truncate">{lastMessages[lead.id] || 'No messages'}</div>
             </div>
           ))}
         </div>

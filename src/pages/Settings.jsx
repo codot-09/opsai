@@ -11,7 +11,6 @@ const defaultSettings = {
   channels: {
     telegram: {
       enabled: false,
-      auto_reply: false,
       welcome_message: '',
     },
   },
@@ -92,7 +91,6 @@ export default function Settings() {
           channels: {
             telegram: {
               enabled: settingsRow.settings.channels?.telegram?.enabled ?? defaultSettings.channels.telegram.enabled,
-              auto_reply: settingsRow.settings.channels?.telegram?.auto_reply ?? defaultSettings.channels.telegram.auto_reply,
               welcome_message:
                 settingsRow.settings.channels?.telegram?.welcome_message ?? defaultSettings.channels.telegram.welcome_message,
             },
@@ -205,150 +203,147 @@ export default function Settings() {
       className="space-y-8"
     >
       <div className="space-y-3">
-        <p className="text-sm uppercase tracking-[0.24em] text-white/40">Settings</p>
-        <div className="grid gap-4 md:grid-cols-[1.4fr_1fr] md:items-end">
-          <div>
-            <h2 className="text-3xl font-semibold tracking-tight">Workspace controls</h2>
-            <p className="max-w-2xl text-white/60">
-              Configure workspace identity, channel routing, and automation with settings from workspace_settings.
-            </p>
-          </div>
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-sm text-white/70">
-            <p className="font-semibold text-white">Workspace overview</p>
-            <div className="mt-4 space-y-3">
-              <div className="flex items-center justify-between gap-3 rounded-3xl bg-black/50 px-4 py-3">
-                <span className="text-white/70">Workspace</span>
-                <span className="font-medium text-white">{workspace?.name ?? 'Not configured'}</span>
-              </div>
-              <div className="flex items-center justify-between gap-3 rounded-3xl bg-black/50 px-4 py-3">
-                <span className="text-white/70">Slug</span>
-                <span className="font-medium text-white">{workspace?.slug ?? 'pending'}</span>
-              </div>
-              <div className="flex items-center justify-between gap-3 rounded-3xl bg-black/50 px-4 py-3">
-                <span className="text-white/70">Settings source</span>
-                <span className="font-medium text-white">workspace_settings</span>
-              </div>
-            </div>
-          </div>
+        <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Settings</p>
+        <div className="space-y-3">
+          <h2 className="text-3xl font-semibold tracking-tight">Workspace settings</h2>
+          <p className="max-w-2xl text-gray-600">Manage workspace identity, access controls, and automation settings in one place.</p>
         </div>
       </div>
 
-      <form onSubmit={handleSave} className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
-        <div className="space-y-6 rounded-3xl border border-white/10 bg-white/5 p-8">
+      <form onSubmit={handleSave} className="grid gap-6 xl:grid-cols-[0.95fr_0.65fr]">
+        <div className="space-y-6 rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
           {loading ? (
-            <div className="rounded-3xl bg-black/50 p-6 text-center text-white/70">Loading workspace settings…</div>
+            <div className="rounded-3xl bg-gray-50 p-6 text-center text-gray-700">Loading workspace settings…</div>
           ) : (
             <>
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-white/80">Workspace name</label>
+                <label className="block text-sm font-semibold text-gray-800">Workspace name</label>
                 <input
                   value={workspaceName}
                   onChange={(event) => setWorkspaceName(event.target.value)}
                   placeholder="OpsAI Growth HQ"
                   disabled={disabled}
-                  className="w-full rounded-3xl border border-white/10 bg-black/50 px-5 py-4 text-white outline-none transition focus:border-white/20 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full rounded-3xl border border-gray-200 bg-white px-5 py-4 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="block text-sm font-semibold text-white/80">Workspace slug</label>
+                <label className="block text-sm font-semibold text-gray-800">Workspace slug</label>
                 <input
                   value={slug}
                   onChange={(event) => setSlug(event.target.value)}
                   placeholder="opsai-growth"
                   disabled={disabled}
-                  className="w-full rounded-3xl border border-white/10 bg-black/50 px-5 py-4 text-white outline-none transition focus:border-white/20 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full rounded-3xl border border-gray-200 bg-white px-5 py-4 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50"
                 />
-                <p className="text-sm text-white/50">A unique, shareable identifier used by your workspace settings.</p>
+                <p className="text-sm text-gray-500">A unique identifier for your workspace settings.</p>
               </div>
 
+              <div className="grid gap-4 lg:grid-cols-2">
+                <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="font-medium text-gray-900">CRM access</p>
+                      <p className="text-sm text-gray-600">Enable or disable CRM features.</p>
+                    </div>
+                    <ToggleSwitch
+                      checked={settings.apps?.crm ?? false}
+                      onChange={(enabled) => handleSettingChange('apps.crm', enabled)}
+                      label="CRM access"
+                    />
+                  </div>
+                </div>
+
+                <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="font-medium text-gray-900">Lead engine</p>
+                      <p className="text-sm text-gray-600">Enable lead generation automation.</p>
+                    </div>
+                    <ToggleSwitch
+                      checked={settings.apps?.lead_engine ?? false}
+                      onChange={(enabled) => handleSettingChange('apps.lead_engine', enabled)}
+                      label="Lead engine"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="font-medium text-gray-900">Telegram</p>
+                    <p className="text-sm text-gray-600">Control Telegram automation and welcome messages.</p>
+                  </div>
+                  <ToggleSwitch
+                    checked={settings.channels?.telegram?.enabled ?? false}
+                    onChange={(enabled) => handleSettingChange('channels.telegram.enabled', enabled)}
+                    label="Telegram enabled"
+                  />
+                </div>
+
+                <div className="mt-5 space-y-3">
+                  <label className="block text-sm font-semibold text-gray-800">Welcome message</label>
+                  <textarea
+                    value={settings.channels?.telegram?.welcome_message ?? ''}
+                    onChange={(event) => handleSettingChange('channels.telegram.welcome_message', event.target.value)}
+                    disabled={disabled}
+                    rows={3}
+                    className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Welcome message for Telegram leads"
+                  />
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="font-medium text-gray-900">Automation delay</p>
+                    <p className="text-sm text-gray-600">Set delay for follow-up actions.</p>
+                  </div>
+                  <input
+                    type="number"
+                    min={1}
+                    value={settings.automation?.followup_delay_hours ?? 24}
+                    onChange={(event) => handleSettingChange('automation.followup_delay_hours', Number(event.target.value))}
+                    disabled={disabled}
+                    className="w-24 rounded-3xl border border-gray-200 bg-white px-4 py-3 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                </div>
+              </div>
             </>
           )}
         </div>
 
-        <div className="space-y-6">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
-            <p className="text-lg font-semibold text-white">Channel & feature controls</p>
-            <p className="mt-2 text-sm text-white/60">Update app access and Telegram config from the workspace settings object.</p>
-
-            <div className="mt-8 space-y-5">
-              <div className="flex items-center justify-between gap-4 rounded-3xl border border-white/10 bg-black/40 px-5 py-4">
-                <div>
-                  <p className="font-medium text-white">CRM access</p>
-                  <p className="text-sm text-white/50">Enable or disable CRM functionality for the workspace.</p>
-                </div>
-                <ToggleSwitch
-                  checked={settings.apps?.crm ?? false}
-                  onChange={(enabled) => handleSettingChange('apps.crm', enabled)}
-                  label="CRM toggle"
-                />
-              </div>
-
-              <div className="flex items-center justify-between gap-4 rounded-3xl border border-white/10 bg-black/40 px-5 py-4">
-                <div>
-                  <p className="font-medium text-white">Lead engine</p>
-                  <p className="text-sm text-white/50">Enable lead engine automation for smart sourcing.</p>
-                </div>
-                <ToggleSwitch
-                  checked={settings.apps?.lead_engine ?? false}
-                  onChange={(enabled) => handleSettingChange('apps.lead_engine', enabled)}
-                  label="Lead engine toggle"
-                />
-              </div>
-
-              <div className="flex items-center justify-between gap-4 rounded-3xl border border-white/10 bg-black/40 px-5 py-4">
-                <div>
-                  <p className="font-medium text-white">Telegram enabled</p>
-                  <p className="text-sm text-white/50">Allow Telegram channel automation to receive and reply to messages.</p>
-                </div>
-                <ToggleSwitch
-                  checked={settings.channels?.telegram?.enabled ?? false}
-                  onChange={(enabled) => handleSettingChange('channels.telegram.enabled', enabled)}
-                  label="Telegram enabled"
-                />
-              </div>
-
-              <div className="rounded-3xl border border-white/10 bg-black/40 p-5">
-                <label className="block text-sm font-semibold text-white/80">Telegram welcome message</label>
-                <textarea
-                  value={settings.channels?.telegram?.welcome_message ?? ''}
-                  onChange={(event) => handleSettingChange('channels.telegram.welcome_message', event.target.value)}
-                  disabled={disabled}
-                  rows={3}
-                  className="mt-3 w-full rounded-3xl border border-white/10 bg-black/50 px-4 py-3 text-white outline-none transition focus:border-white/20 disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Enter the welcome message for Telegram leads"
-                />
-              </div>
-
-              <div className="rounded-3xl border border-white/10 bg-black/40 p-5">
-                <label className="block text-sm font-semibold text-white/80">Follow-up delay (hours)</label>
-                <input
-                  type="number"
-                  min={1}
-                  value={settings.automation?.followup_delay_hours ?? 24}
-                  onChange={(event) => handleSettingChange('automation.followup_delay_hours', Number(event.target.value))}
-                  disabled={disabled}
-                  className="mt-3 w-full rounded-3xl border border-white/10 bg-black/50 px-5 py-4 text-white outline-none transition focus:border-white/20 disabled:cursor-not-allowed disabled:opacity-50"
-                />
-              </div>
+        <aside className="space-y-6 rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
+          <div className="space-y-4">
+            <p className="text-sm uppercase tracking-[0.24em] text-gray-500">Workspace</p>
+            <div className="rounded-3xl border border-gray-200 bg-gray-50 p-5">
+              <p className="text-sm text-gray-600">Name</p>
+              <p className="mt-2 text-base font-semibold text-gray-900">{workspace?.name ?? 'Not configured'}</p>
+            </div>
+            <div className="rounded-3xl border border-gray-200 bg-gray-50 p-5">
+              <p className="text-sm text-gray-600">Slug</p>
+              <p className="mt-2 text-base font-semibold text-gray-900">{workspace?.slug ?? 'pending'}</p>
             </div>
           </div>
-
-          {(error || feedback) && (
-            <div className={`rounded-3xl p-4 text-sm ${error ? 'bg-red-500/10 text-red-200 border border-red-500/10' : 'bg-emerald-500/10 text-emerald-200 border border-emerald-500/10'}`}>
-              {error || feedback}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={disabled}
-            className="w-full rounded-3xl bg-white text-black px-6 py-4 text-sm font-semibold uppercase tracking-[0.16em] shadow-xl shadow-white/10 transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {saving ? 'Saving workspace...' : loading ? 'Loading settings…' : 'Save workspace settings'}
-          </button>
-        </div>
+        </aside>
       </form>
+
+      {(error || feedback) && (
+        <div className={`rounded-3xl p-4 text-sm ${error ? 'bg-red-50 text-red-800 border border-red-200' : 'bg-green-50 text-green-800 border border-green-200'}`}>
+          {error || feedback}
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={handleSave}
+        disabled={disabled}
+        className="w-full rounded-3xl bg-white text-black px-6 py-4 text-sm font-semibold uppercase tracking-[0.16em] shadow-xl shadow-white/10 transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {saving ? 'Saving…' : loading ? 'Loading…' : 'Save settings'}
+      </button>
     </motion.div>
   );
 }

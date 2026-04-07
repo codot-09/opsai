@@ -76,23 +76,23 @@ export default function KanbanBoard() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Today's Task Board</h2>
+        <h2 className="text-2xl font-semibold text-black">Today's Task Board</h2>
       </div>
       {loading ? (
-        <div className="text-center text-white/60 py-8">Loading today's tasks...</div>
+        <div className="text-center text-gray-600 py-8">Loading today's tasks...</div>
       ) : error ? (
-        <div className="text-center text-red-400 py-8">
+        <div className="text-center text-red-600 py-8">
           <p className="text-lg font-medium">Something went wrong</p>
           <p className="text-sm mt-2">{error}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {columns.map((status) => (
-            <div key={status} className="bg-white/5 rounded-2xl p-4 border border-white/10">
-              <h3 className="text-lg font-medium mb-4 capitalize">{status.replace('_', ' ')}</h3>
+            <div key={status} className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
+              <h3 className="text-lg font-medium mb-4 capitalize text-black">{status.replace('_', ' ')}</h3>
               <div className="space-y-2">
                 {tasksByStatus[status].length === 0 ? (
-                  <div className="text-white/40 text-sm">No tasks</div>
+                  <div className="text-gray-500 text-sm">No tasks</div>
                 ) : (
                   tasksByStatus[status].map((task) => (
                     <TaskCard key={task.id} task={task} onClick={() => setSelectedTask(task)} />

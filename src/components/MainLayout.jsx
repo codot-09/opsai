@@ -72,14 +72,14 @@ export default function MainLayout({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <div className="text-sm text-white/70">Loading workspace...</div>
+      <div className="min-h-screen flex items-center justify-center bg-white text-black">
+        <div className="text-sm text-gray-600">Loading workspace...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-white text-black">
       <div className="flex min-h-screen">
         <Sidebar />
         <div className="flex min-h-screen flex-1 flex-col">

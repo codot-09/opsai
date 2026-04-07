@@ -2,19 +2,19 @@ import { twMerge } from 'tailwind-merge';
 
 export default function Card({ title, value, icon: Icon, className, children }) {
   return (
-    <div className={twMerge('rounded-3xl border border-white/10 bg-white/5 p-6 shadow-sm transition hover:border-white/20', className)}>
-      <div className="flex items-start justify-between gap-4">
+    <div className={twMerge('rounded-2xl border border-gray-200 bg-white p-5 transition hover:border-gray-300 hover:bg-gray-50', className)}>
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm uppercase tracking-[0.24em] text-white/40">{title}</p>
-          <p className="mt-3 text-3xl font-semibold text-white">{value}</p>
+          <p className="text-xs uppercase tracking-[0.24em] text-gray-500 font-medium">{title}</p>
+          <p className="mt-3 text-2xl font-semibold text-black">{value}</p>
         </div>
         {Icon && (
-          <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-white/10 text-white/80">
-            <Icon className="h-6 w-6" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+            <Icon className="h-5 w-5" />
           </div>
         )}
       </div>
-      {children && <div className="mt-4 text-sm text-white/60">{children}</div>}
+      {children && <div className="mt-4 text-xs text-gray-600">{children}</div>}
     </div>
   );
 }

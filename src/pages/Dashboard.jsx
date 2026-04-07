@@ -101,15 +101,15 @@ export default function Dashboard() {
 
       <Chart title="Leads per day" subtitle="Last 7 days">
         {loading ? (
-          <div className="flex h-[320px] items-center justify-center text-white/50">Loading chart...</div>
+          <div className="flex h-[320px] items-center justify-center text-gray-500">Loading chart...</div>
         ) : (
           <ResponsiveContainer width="100%" height={320}>
             <LineChart data={chartData}>
-              <CartesianGrid stroke="#ffffff1a" vertical={false} />
-              <XAxis dataKey="label" stroke="#fff" tick={{ fill: '#fff', fontSize: 12 }} />
-              <YAxis stroke="#fff" tick={{ fill: '#fff', fontSize: 12 }} />
-              <Tooltip cursor={{ stroke: '#ffffff22', strokeWidth: 1 }} contentStyle={{ background: '#000', border: '1px solid rgba(255,255,255,0.12)' }} />
-              <Line type="monotone" dataKey="count" stroke="#fff" strokeWidth={3} dot={{ r: 4, fill: '#fff' }} />
+              <CartesianGrid stroke="#e0e0e0" vertical={false} />
+              <XAxis dataKey="label" stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
+              <YAxis stroke="#666" tick={{ fill: '#666', fontSize: 12 }} />
+              <Tooltip cursor={{ stroke: '#3b82f6', strokeWidth: 1 }} contentStyle={{ background: '#ffffff', border: '1px solid #e0e0e0', borderRadius: '8px', color: '#000' }} />
+              <Line type="monotone" dataKey="count" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4, fill: '#3b82f6' }} />
             </LineChart>
           </ResponsiveContainer>
         )}
@@ -122,13 +122,13 @@ export default function Dashboard() {
 
       <Table title="Recent leads" subtitle="Latest lead activity">
         {loading ? (
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-white/60">Loading recent leads...</div>
+          <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center text-gray-600">Loading recent leads...</div>
         ) : recentLeads.length === 0 ? (
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-white/60">No recent leads yet.</div>
+          <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center text-gray-600">No recent leads yet.</div>
         ) : (
-          <table className="min-w-full text-left text-sm text-white/70">
+          <table className="min-w-full text-left text-sm text-gray-700">
             <thead>
-              <tr className="border-b border-white/10 text-white/60">
+              <tr className="border-b border-gray-200 text-gray-600">
                 <th className="px-4 py-4">Name</th>
                 <th className="px-4 py-4">Phone</th>
                 <th className="px-4 py-4">Interest</th>
@@ -138,12 +138,12 @@ export default function Dashboard() {
             </thead>
             <tbody>
               {recentLeads.map((lead) => (
-                <tr key={lead.id} className="border-b border-white/10 transition hover:bg-white/5">
-                  <td className="px-4 py-4 font-medium text-white">{lead.name || '—'}</td>
+                <tr key={lead.id} className="border-b border-gray-200 transition hover:bg-gray-50">
+                  <td className="px-4 py-4 font-medium text-black">{lead.name || '—'}</td>
                   <td className="px-4 py-4">{lead.phone || '—'}</td>
                   <td className="px-4 py-4">{lead.interest || '—'}</td>
                   <td className="px-4 py-4">{lead.status || 'Unknown'}</td>
-                  <td className="px-4 py-4 text-white/50">{new Date(lead.created_at || Date.now()).toLocaleDateString()}</td>
+                  <td className="px-4 py-4 text-gray-500">{new Date(lead.created_at || Date.now()).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>

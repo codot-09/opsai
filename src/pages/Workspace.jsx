@@ -71,29 +71,29 @@ export default function Workspace() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-2xl p-10 glass border border-white/10 rounded-3xl shadow-2xl">
+    <div className="min-h-screen bg-white text-gray-900 flex items-center justify-center px-6 py-12">
+      <div className="w-full max-w-2xl p-10 glass border border-gray-200 rounded-3xl shadow-2xl bg-white">
         <div className="mb-8">
-          <p className="text-sm uppercase tracking-[0.3em] text-white/50">Workspace</p>
+          <p className="text-sm uppercase tracking-[0.3em] text-gray-500">Workspace</p>
           <h1 className="text-4xl font-bold tracking-tight mt-3">Create your first workspace</h1>
-          <p className="mt-3 text-white/60 max-w-xl">
+          <p className="mt-3 text-gray-600 max-w-xl">
             Configure a workspace for your AI operations team. Your owner ID is linked to the signed-in account.
           </p>
         </div>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-white/80">Workspace Name</label>
+            <label className="block text-sm font-semibold text-gray-800">Workspace Name</label>
             <input
               value={workspaceName}
               onChange={(event) => setWorkspaceName(event.target.value)}
               placeholder="e.g. OpsAI Growth Team"
-              className="w-full rounded-3xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none transition focus:border-white/20"
+              className="w-full rounded-3xl border border-gray-200 bg-white px-5 py-4 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
             />
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-white/80">Workspace Slug</label>
+            <label className="block text-sm font-semibold text-gray-800">Workspace Slug</label>
             <input
               value={slug}
               onChange={(event) => {
@@ -101,17 +101,17 @@ export default function Workspace() {
                 setSlugEdited(true);
               }}
               placeholder="opsai-growth-team"
-              className="w-full rounded-3xl border border-white/10 bg-white/5 px-5 py-4 text-white outline-none transition focus:border-white/20"
+              className="w-full rounded-3xl border border-gray-200 bg-white px-5 py-4 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
             />
-            <p className="text-sm text-white/50">A clean, shareable identifier for your workspace URL.</p>
+            <p className="text-sm text-gray-500">A clean, shareable identifier for your workspace URL.</p>
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-semibold text-white/80">Owner ID</label>
+            <label className="block text-sm font-semibold text-gray-800">Owner ID</label>
             <input
               value={user?.id ?? ''}
               readOnly
-              className="w-full rounded-3xl border border-white/10 bg-white/5 px-5 py-4 text-white/50 outline-none"
+              className="w-full rounded-3xl border border-gray-200 bg-gray-50 px-5 py-4 text-gray-500 outline-none"
             />
           </div>
 

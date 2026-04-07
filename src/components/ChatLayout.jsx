@@ -7,10 +7,10 @@ export default function ChatLayout() {
 
   return (
     <div className="flex h-full">
-      <div className="w-80 border-r border-white/10 bg-black">
+      <div className="w-80 border-r border-gray-200 bg-white">
         <LeadList onSelectLead={setSelectedLead} selectedLead={selectedLead} />
       </div>
-      <div className="flex-1 bg-black">
+      <div className="flex-1 bg-white">
         <ChatPanel lead={selectedLead} />
       </div>
     </div>

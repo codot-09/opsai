@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
@@ -65,45 +65,66 @@ export default function CommandThread({ command }) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-5 rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-[0_20px_80px_rgba(255,255,255,0.04)] backdrop-blur"
+      className="space-y-3"
     >
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div className="space-y-2">
-          <p className="text-lg font-semibold text-white">{command.user_input}</p>
-          <p className="text-xs text-white/50">{new Date(command.created_at).toLocaleString()}</p>
+      <div className="flex justify-end">
+        <div className="rounded-lg bg-blue-100 p-4 text-blue-900 max-w-2xl">
+          <div className="flex items-center justify-between gap-4 mb-2 text-xs text-blue-700">
+            <span className="font-medium text-blue-900">You</span>
+            <span>{new Date(command.created_at).toLocaleTimeString()}</span>
+          </div>
+          <p className="text-sm leading-6">{command.user_input}</p>
         </div>
-        <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-white/80">
-          <Sparkles className="h-4 w-4 text-white/70" />
-          {stageText}
-        </span>
       </div>
 
-      <div className="rounded-3xl bg-black/50 p-5 text-white/80">
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-medium">Command workflow</p>
-          {tasks.length > 0 && (
-            <button
-              onClick={() => setExpanded(!expanded)}
-              className="text-sm text-white/60 hover:text-white/80 transition"
-            >
-              {expanded ? 'Hide tasks' : `Show ${tasks.length} tasks`}
-              {expanded ? <ChevronUp className="inline-block ml-1 h-4 w-4" /> : <ChevronDown className="inline-block ml-1 h-4 w-4" />}
-            </button>
-          )}
-        </div>
-        {expanded ? (
-          <div className="mt-4">
-            <TaskTimeline tasks={tasks} />
+      <div className="flex justify-start">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 text-gray-800 max-w-2xl">
+          <div className="flex items-center justify-between gap-4 text-xs text-gray-600 mb-3">
+            <span className="font-medium text-black">AI Workflow</span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-xs text-purple-700">
+              <Sparkles className="h-3 w-3 text-purple-600" />
+              {stageText}
+            </span>
           </div>
-        ) : (
-          <div className="mt-4 text-sm text-white/50">{tasks.length ? 'Expand to inspect task progress.' : 'Waiting for tasks to appear...'}</div>
-        )}
+
+          <div className="space-y-3">
+            <p className="text-xs text-gray-600">
+              {tasks.length
+                ? `Task stream is active. Tap below to inspect ${tasks.length} item${tasks.length === 1 ? '' : 's'}.`
+                : 'No tasks have started yet. The AI will begin processing your command shortly.'}
+            </p>
+            <div className="rounded-lg bg-gray-50 p-3 text-xs text-gray-700">
+              <div className="flex items-center justify-between">
+                <span>Task summary</span>
+                {tasks.length > 0 && (
+                  <button
+                    onClick={() => setExpanded(!expanded)}
+                    className="flex items-center gap-1 text-gray-600 hover:text-black transition text-xs"
+                  >
+                    {expanded ? 'Hide' : `Show ${tasks.length}`}
+                    {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                  </button>
+                )}
+              </div>
+              <div className="mt-2 text-xs text-gray-600">
+                {tasks.length ? 'Expand to review each active task.' : 'Waiting for tasks...' }
+              </div>
+            </div>
+            {expanded && (
+              <div className="mt-2">
+                <TaskTimeline tasks={tasks} />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {command.result_summary && (
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-5 text-white/80">
-          <p className="text-sm uppercase tracking-[0.24em] text-white/40">Result</p>
-          <p className="mt-3 text-sm leading-6">{command.result_summary}</p>
+        <div className="flex justify-end">
+          <div className="rounded-lg border border-gray-200 bg-white p-4 text-gray-800 max-w-2xl">
+            <p className="text-xs uppercase tracking-[0.24em] text-gray-500 font-medium">Result</p>
+            <p className="mt-2 text-xs leading-5">{command.result_summary}</p>
+          </div>
         </div>
       )}
     </motion.div>

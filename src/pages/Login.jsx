@@ -32,29 +32,29 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-6 py-12">
+    <div className="min-h-screen bg-white text-black flex items-center justify-center px-4 py-12">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="w-full max-w-md space-y-8 p-10 glass border border-white/10 rounded-3xl shadow-2xl"
+        className="w-full max-w-md space-y-8 p-8 border border-gray-200 rounded-2xl bg-white shadow-sm"
       >
-        <div className="space-y-3 text-center">
-          <p className="text-sm uppercase tracking-[0.3em] text-white/50">Secure access</p>
-          <h1 className="text-4xl font-bold">Welcome back to OpsAI</h1>
-          <p className="text-white/60">Use your Google account to sign in and access your dashboard.</p>
+        <div className="space-y-4 text-center">
+          <p className="text-xs uppercase tracking-[0.3em] text-gray-500 font-medium">Login</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-black">Welcome to OpsAI</h1>
+          <p className="text-sm text-gray-600 leading-relaxed">Sign in with your Google account to access your workspace.</p>
         </div>
 
         <button
           type="button"
           onClick={handleLogin}
-          className="w-full inline-flex items-center justify-center gap-3 rounded-full bg-white text-black py-4 text-sm font-semibold uppercase tracking-[0.08em] shadow-xl shadow-white/10 hover:bg-white/90 transition"
+          className="w-full inline-flex items-center justify-center rounded-lg bg-blue-600 text-white py-3 text-sm font-semibold transition hover:bg-blue-700 active:bg-blue-800"
         >
           Continue with Google
         </button>
 
-        <p className="text-center text-sm text-white/50">
-          After sign in, you will be redirected to workspace setup.
+        <p className="text-center text-xs text-gray-500 leading-relaxed">
+          You'll be redirected to workspace setup after signing in.
         </p>
       </motion.div>
     </div>

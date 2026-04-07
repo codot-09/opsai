@@ -63,23 +63,23 @@ export default function TaskTable() {
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           placeholder="Filter by status"
-          className="rounded-3xl border border-white/10 bg-black/90 px-4 py-3 text-white outline-none transition focus:border-white/20"
+          className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-black outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
         />
         <input
           value={agentFilter}
           onChange={(e) => setAgentFilter(e.target.value)}
           placeholder="Filter by agent"
-          className="rounded-3xl border border-white/10 bg-black/90 px-4 py-3 text-white outline-none transition focus:border-white/20"
+          className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-black outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
         />
       </div>
       {loading ? (
-        <div className="text-center text-white/60 py-8">Loading tasks...</div>
+        <div className="text-center text-gray-600 py-8">Loading tasks...</div>
       ) : filteredTasks.length === 0 ? (
-        <div className="text-center text-white/60 py-8">No tasks found</div>
+        <div className="text-center text-gray-600 py-8">No tasks found</div>
       ) : (
-        <table className="min-w-full text-left text-sm text-white/70">
+        <table className="min-w-full text-left text-sm text-gray-700">
           <thead>
-            <tr className="border-b border-white/10 text-white/60">
+            <tr className="border-b border-gray-200 text-gray-600">
               <th className="px-4 py-4">Task Name</th>
               <th className="px-4 py-4">Agent</th>
               <th className="px-4 py-4">Status</th>

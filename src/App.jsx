@@ -7,6 +7,7 @@ import Leads from './pages/Leads.jsx';
 import Chat from './pages/Chat.jsx';
 import Tasks from './pages/Tasks.jsx';
 import Settings from './pages/Settings.jsx';
+import Landing from './pages/Landing.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import MainLayout from './components/MainLayout.jsx';
 
@@ -30,8 +31,8 @@ function RootRedirect() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <div className="text-sm text-white/70">Restoring session...</div>
+      <div className="min-h-screen flex items-center justify-center bg-white text-gray-900">
+        <div className="text-sm text-gray-600">Restoring session...</div>
       </div>
     );
   }
@@ -43,7 +44,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<RootRedirect />} />
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route
           path="/dashboard"

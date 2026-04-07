@@ -48,33 +48,33 @@ export default function ChatDrawer({ lead, onClose }) {
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'tween', duration: 0.3 }}
-        className="fixed right-0 top-0 h-full w-96 bg-black border-l border-white/10 shadow-xl z-50 flex flex-col"
+        className="fixed right-0 top-0 h-full w-96 bg-white border-l border-gray-200 shadow-xl z-50 flex flex-col"
       >
-        <div className="flex items-center justify-between p-4 border-b border-white/10 bg-black sticky top-0 z-10">
-          <h3 className="text-lg font-semibold text-white">Chat with {lead.name}</h3>
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white sticky top-0 z-10">
+          <h3 className="text-lg font-semibold text-black">Chat with {lead.name}</h3>
           <div className="flex items-center gap-2">
             <button
               onClick={fetchMessages}
-              className="p-2 rounded-full hover:bg-white/5 transition"
+              className="p-2 rounded-full hover:bg-gray-100 transition"
               title="Refresh"
             >
-              <RefreshCw className="w-4 h-4 text-white/60" />
+              <RefreshCw className="w-4 h-4 text-gray-600" />
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-full hover:bg-white/5 transition"
+              className="p-2 rounded-full hover:bg-gray-100 transition"
             >
-              <X className="w-5 h-5 text-white/60" />
+              <X className="w-5 h-5 text-gray-600" />
             </button>
           </div>
         </div>
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {loading ? (
-            <div className="text-center text-white/60 py-8">Loading messages...</div>
+            <div className="text-center text-gray-600 py-8">Loading messages...</div>
           ) : error ? (
-            <div className="text-center text-red-200 py-8">{error}</div>
+            <div className="text-center text-red-600 py-8">{error}</div>
           ) : messages.length === 0 ? (
-            <div className="text-center text-white/60 py-8">No messages yet</div>
+            <div className="text-center text-gray-600 py-8">No messages yet</div>
           ) : (
             messages.map((msg) => (
               <div
@@ -85,7 +85,7 @@ export default function ChatDrawer({ lead, onClose }) {
                   className={`max-w-xs px-4 py-3 rounded-2xl text-sm shadow-sm ${
                     msg.role === 'user'
                       ? 'bg-gray-100 text-gray-900'
-                      : 'bg-blue-500 text-white'
+                      : 'bg-blue-600 text-white'
                   }`}
                 >
                   <p className="leading-relaxed">{msg.content}</p>

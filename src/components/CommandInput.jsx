@@ -26,15 +26,15 @@ export default function CommandInput({ onSubmit }) {
           value={command}
           onChange={(e) => setCommand(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Type your command... (e.g., 'Send message to all leads')"
-          className="w-full min-h-[120px] p-4 pr-12 rounded-2xl border border-white/10 bg-white/5 text-white placeholder-white/40 outline-none resize-none focus:border-white/20 transition"
+          placeholder="Type your command..."
+          className="w-full min-h-[100px] p-4 rounded-lg border border-gray-300 bg-white text-black placeholder-gray-400 outline-none resize-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
           rows={3}
         />
         <button
           type="submit"
-          className="absolute bottom-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition"
+          className="absolute bottom-3 right-3 p-2 rounded-lg bg-blue-100 hover:bg-blue-200 transition"
         >
-          <Send className="w-4 h-4 text-white" />
+          <Send className="w-4 h-4 text-blue-600" />
         </button>
       </div>
     </form>

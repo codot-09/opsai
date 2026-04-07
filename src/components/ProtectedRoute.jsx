@@ -36,8 +36,8 @@ export default function ProtectedRoute({ children }) {
 
   if (!authChecked) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <div className="text-sm text-white/70">Checking authentication...</div>
+      <div className="min-h-screen flex items-center justify-center bg-white text-black">
+        <div className="text-sm text-gray-600">Checking authentication...</div>
       </div>
     );
   }

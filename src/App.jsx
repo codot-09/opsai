@@ -8,6 +8,7 @@ import Chat from './pages/Chat.jsx';
 import Tasks from './pages/Tasks.jsx';
 import Settings from './pages/Settings.jsx';
 import Landing from './pages/Landing.jsx';
+import Workspace from './pages/Workspace.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import MainLayout from './components/MainLayout.jsx';
 
@@ -19,7 +20,21 @@ function RootRedirect() {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        navigate('/dashboard', { replace: true });
+        // Check if user has a workspace
+        const { data: workspaces, error } = await supabase
+          .from('workspaces')
+          .select('id')
+          .eq('owner_id', session.user.id)
+          .limit(1);
+
+        if (error) {
+          console.error('Error checking workspace:', error);
+          navigate('/workspace', { replace: true });
+        } else if (workspaces && workspaces.length > 0) {
+          navigate('/dashboard', { replace: true });
+        } else {
+          navigate('/workspace', { replace: true });
+        }
       } else {
         navigate('/login', { replace: true });
       }
@@ -97,7 +112,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/workspace" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/workspace" element={<Workspace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

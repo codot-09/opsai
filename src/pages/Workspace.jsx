@@ -28,6 +28,21 @@ export default function Workspace() {
         return;
       }
       setUser(session.user);
+
+      // Check if user already has a workspace
+      const { data: workspaces, error } = await supabase
+        .from('workspaces')
+        .select('id')
+        .eq('owner_id', session.user.id)
+        .limit(1);
+
+      if (error) {
+        console.error('Error checking workspace:', error);
+      } else if (workspaces && workspaces.length > 0) {
+        navigate('/dashboard', { replace: true });
+        return;
+      }
+
       if (!slugEdited) {
         setSlug(slugify(session.user.email || 'workspace'));
       }

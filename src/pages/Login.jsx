@@ -10,7 +10,24 @@ export default function Login() {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        navigate('/dashboard', { replace: true });
+        // Check if user has a workspace
+        const { data: workspaces, error } = await supabase
+          .from('workspaces')
+          .select('id')
+          .eq('owner_id', session.user.id)
+          .limit(1);
+
+        if (error) {
+          console.error('Error checking workspace:', error);
+          // If error checking workspace, redirect to workspace creation
+          navigate('/workspace', { replace: true });
+        } else if (workspaces && workspaces.length > 0) {
+          // User has workspace, redirect to dashboard
+          navigate('/dashboard', { replace: true });
+        } else {
+          // New user, redirect to workspace creation
+          navigate('/workspace', { replace: true });
+        }
       }
     };
 
@@ -21,7 +38,7 @@ export default function Login() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/dashboard`,
+        redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 

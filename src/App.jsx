@@ -50,14 +50,14 @@ export default function App() {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <MainLayout>
+              {/* <MainLayout> */}
                 <Dashboard />
-              </MainLayout>
+              {/* </MainLayout> */}
             </ProtectedRoute>
           }
         />
         <Route
-          path="/leads"
+          path="/le ads"
           element={
             <ProtectedRoute>
               <MainLayout>

@@ -17,9 +17,9 @@ export default function ChatDrawer({ lead, onClose }) {
   const fetchMessages = async () => {
     setLoading(true);
     
-    const workspaceId = await getCurrentWorkspaceId();
-    if (!workspaceId) {
-      setError('No workspace found');
+    const { workspaceId, error: workspaceError } = await getCurrentWorkspaceId();
+    if (workspaceError || !workspaceId) {
+      setError('No workspace found: ' + workspaceError);
       setMessages([]);
       setLoading(false);
       return;

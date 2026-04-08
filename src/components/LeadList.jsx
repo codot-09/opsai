@@ -11,9 +11,9 @@ export default function LeadList({ onSelectLead, selectedLead }) {
     const fetchLeads = async () => {
       setLoading(true);
       
-      const workspaceId = await getCurrentWorkspaceId();
-      if (!workspaceId) {
-        console.error('No workspace found');
+      const { workspaceId, error: workspaceError } = await getCurrentWorkspaceId();
+      if (workspaceError || !workspaceId) {
+        console.error('No workspace found:', workspaceError);
         setLoading(false);
         return;
       }

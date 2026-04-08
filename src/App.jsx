@@ -17,9 +17,20 @@ function RootRedirect() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    let timeoutId;
+
     const checkSession = async () => {
       try {
+        // Set a timeout to prevent hanging
+        timeoutId = setTimeout(() => {
+          console.warn('Session check timeout, redirecting to login');
+          navigate('/login', { replace: true });
+          setLoading(false);
+        }, 10000); // 10 second timeout
+
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+        clearTimeout(timeoutId);
 
         if (sessionError) {
           console.error('Session error:', sessionError);
@@ -57,12 +68,17 @@ function RootRedirect() {
         }
       } catch (err) {
         console.error('Unexpected error in session check:', err);
+        clearTimeout(timeoutId);
         navigate('/login', { replace: true });
       }
       setLoading(false);
     };
 
     checkSession();
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [navigate]);
 
   if (loading) {

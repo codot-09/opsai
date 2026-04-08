@@ -21,9 +21,9 @@ export default function CommandThread({ command }) {
 
   useEffect(() => {
     const fetchTasks = async () => {
-      const workspaceId = await getCurrentWorkspaceId();
-      if (!workspaceId) {
-        console.error('No workspace found');
+      const { workspaceId, error: workspaceError } = await getCurrentWorkspaceId();
+      if (workspaceError || !workspaceId) {
+        console.error('No workspace found:', workspaceError);
         return;
       }
       
@@ -54,8 +54,8 @@ export default function CommandThread({ command }) {
         },
         async (payload) => {
           // Verify the task belongs to current workspace
-          const workspaceId = await getCurrentWorkspaceId();
-          if (payload.new?.workspace_id !== workspaceId) {
+          const { workspaceId, error: workspaceError } = await getCurrentWorkspaceId();
+          if (workspaceError || payload.new?.workspace_id !== workspaceId) {
             return; // Ignore tasks from other workspaces
           }
           

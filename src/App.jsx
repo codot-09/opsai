@@ -46,6 +46,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/auth/callback" element={<RootRedirect />} />
         <Route
           path="/dashboard"
           element={
@@ -57,7 +58,7 @@ export default function App() {
           }
         />
         <Route
-          path="/le ads"
+          path="/leads"
           element={
             <ProtectedRoute>
               <MainLayout>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, RefreshCw } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
+import { getCurrentWorkspaceId } from '../lib/workspace.js';
 
 export default function ChatDrawer({ lead, onClose }) {
   const [messages, setMessages] = useState([]);
@@ -15,10 +16,20 @@ export default function ChatDrawer({ lead, onClose }) {
 
   const fetchMessages = async () => {
     setLoading(true);
+    
+    const workspaceId = await getCurrentWorkspaceId();
+    if (!workspaceId) {
+      setError('No workspace found');
+      setMessages([]);
+      setLoading(false);
+      return;
+    }
+    
     const { data, error: fetchError } = await supabase
       .from('messages')
       .select('*')
       .eq('lead_id', lead.id)
+      .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: true });
     if (fetchError) {
       setError(fetchError.message);

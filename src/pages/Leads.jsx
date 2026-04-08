@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
+import { getCurrentWorkspaceId } from '../lib/workspace.js';
 import Card from '../components/Card.jsx';
 import Table from '../components/Table.jsx';
 import StatusBadge from '../components/StatusBadge.jsx';
@@ -21,10 +22,18 @@ export default function Leads() {
   const [chatLead, setChatLead] = useState(null);
 
   const updateLeadStatus = async (leadId, newStatus) => {
+    // Get current workspace
+    const { workspaceId, error: workspaceError } = await getCurrentWorkspaceId();
+    if (workspaceError || !workspaceId) {
+      setError(workspaceError || 'Unable to load workspace');
+      return;
+    }
+
     const { error } = await supabase
       .from('leads')
       .update({ status: newStatus })
-      .eq('id', leadId);
+      .eq('id', leadId)
+      .eq('workspace_id', workspaceId);
     if (error) {
       setError(error.message);
     } else {
@@ -37,10 +46,18 @@ export default function Leads() {
   };
 
   const updateLeadNotes = async (leadId, notes) => {
+    // Get current workspace
+    const { workspaceId, error: workspaceError } = await getCurrentWorkspaceId();
+    if (workspaceError || !workspaceId) {
+      setError(workspaceError || 'Unable to load workspace');
+      return;
+    }
+
     const { error } = await supabase
       .from('leads')
       .update({ notes })
-      .eq('id', leadId);
+      .eq('id', leadId)
+      .eq('workspace_id', workspaceId);
     if (error) {
       setError(error.message);
       throw error;
@@ -56,9 +73,19 @@ export default function Leads() {
   useEffect(() => {
     const loadLeads = async () => {
       setLoading(true);
+
+      // Get current workspace
+      const { workspaceId, error: workspaceError } = await getCurrentWorkspaceId();
+      if (workspaceError || !workspaceId) {
+        setError(workspaceError || 'Unable to load workspace');
+        setLoading(false);
+        return;
+      }
+
       const { data, error: fetchError } = await supabase
         .from('leads')
         .select('*')
+        .eq('workspace_id', workspaceId)
         .order('created_at', { ascending: false });
       if (fetchError) {
         setError(fetchError.message);

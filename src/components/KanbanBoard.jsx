@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase.js';
+import { getCurrentWorkspaceId } from '../lib/workspace.js';
 import TaskCard from './TaskCard.jsx';
 import TaskDetailsDrawer from './TaskDetailsDrawer.jsx';
 
@@ -12,11 +13,20 @@ export default function KanbanBoard() {
   const fetchTasks = async () => {
     try {
       setError(null);
+
+      // Get current workspace
+      const { workspaceId, error: workspaceError } = await getCurrentWorkspaceId();
+      if (workspaceError || !workspaceId) {
+        setError(workspaceError || 'Unable to load workspace');
+        return;
+      }
+
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const { data, error: fetchError } = await supabase
         .from('tasks')
         .select('*')
+        .eq('workspace_id', workspaceId)
         .gte('created_at', today.toISOString());
       if (fetchError) {
         console.error('Error fetching tasks:', fetchError);
@@ -35,34 +45,46 @@ export default function KanbanBoard() {
   useEffect(() => {
     fetchTasks();
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const setupSubscription = async () => {
+      const { workspaceId, error: workspaceError } = await getCurrentWorkspaceId();
+      if (workspaceError || !workspaceId) {
+        return;
+      }
 
-    // Subscribe to tasks changes
-    const tasksChannel = supabase
-      .channel('tasks_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tasks',
-          filter: `created_at=gte.${today.toISOString()}`,
-        },
-        (payload) => {
-          if (payload.eventType === 'INSERT') {
-            setTasks((prev) => [...prev, payload.new]);
-          } else if (payload.eventType === 'UPDATE') {
-            setTasks((prev) =>
-              prev.map((task) => (task.id === payload.new.id ? payload.new : task))
-            );
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Subscribe to tasks changes
+      const tasksChannel = supabase
+        .channel('tasks_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'tasks',
+            filter: `workspace_id=eq.${workspaceId}`,
+          },
+          (payload) => {
+            if (payload.eventType === 'INSERT') {
+              setTasks((prev) => [...prev, payload.new]);
+            } else if (payload.eventType === 'UPDATE') {
+              setTasks((prev) =>
+                prev.map((task) => (task.id === payload.new.id ? payload.new : task))
+              );
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe();
 
+      return () => {
+        supabase.removeChannel(tasksChannel);
+      };
+    };
+
+    const cleanup = setupSubscription();
     return () => {
-      supabase.removeChannel(tasksChannel);
+      cleanup?.then?.(fn => fn?.());
     };
   }, []);
 

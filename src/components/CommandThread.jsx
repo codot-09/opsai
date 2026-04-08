@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
+import { getCurrentWorkspaceId } from '../lib/workspace.js';
 import TaskTimeline from './TaskTimeline.jsx';
 
 export default function CommandThread({ command }) {
@@ -20,10 +21,17 @@ export default function CommandThread({ command }) {
 
   useEffect(() => {
     const fetchTasks = async () => {
+      const workspaceId = await getCurrentWorkspaceId();
+      if (!workspaceId) {
+        console.error('No workspace found');
+        return;
+      }
+      
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
-        .eq('command_id', command.id);
+        .eq('command_id', command.id)
+        .eq('workspace_id', workspaceId);
       if (error) {
         console.error('Error fetching tasks:', error);
       } else {
@@ -44,7 +52,13 @@ export default function CommandThread({ command }) {
           table: 'tasks',
           filter: `command_id=eq.${command.id}`,
         },
-        (payload) => {
+        async (payload) => {
+          // Verify the task belongs to current workspace
+          const workspaceId = await getCurrentWorkspaceId();
+          if (payload.new?.workspace_id !== workspaceId) {
+            return; // Ignore tasks from other workspaces
+          }
+          
           if (payload.eventType === 'INSERT') {
             setTasks((prev) => [...prev, payload.new]);
           } else if (payload.eventType === 'UPDATE') {

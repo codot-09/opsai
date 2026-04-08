@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
+import { getCurrentWorkspaceId } from '../lib/workspace.js';
 import MessageBubble from './MessageBubble.jsx';
 
 export default function ChatPanel({ lead }) {
@@ -15,10 +16,20 @@ export default function ChatPanel({ lead }) {
   const fetchMessages = async () => {
     if (!lead) return;
     setLoading(true);
+    
+    const workspaceId = await getCurrentWorkspaceId();
+    if (!workspaceId) {
+      console.error('No workspace found');
+      setMessages([]);
+      setLoading(false);
+      return;
+    }
+    
     const { data, error } = await supabase
       .from('messages')
       .select('*')
       .eq('lead_id', lead.id)
+      .eq('workspace_id', workspaceId)
       .order('created_at', { ascending: true });
     if (error) {
       console.error(error);

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase.js';
+import { getCurrentWorkspaceId } from '../lib/workspace.js';
 
 export default function LeadList({ onSelectLead, selectedLead }) {
   const [leads, setLeads] = useState([]);
@@ -9,9 +10,18 @@ export default function LeadList({ onSelectLead, selectedLead }) {
   useEffect(() => {
     const fetchLeads = async () => {
       setLoading(true);
+      
+      const workspaceId = await getCurrentWorkspaceId();
+      if (!workspaceId) {
+        console.error('No workspace found');
+        setLoading(false);
+        return;
+      }
+      
       const { data: leadsData, error: leadsError } = await supabase
         .from('leads')
         .select('*')
+        .eq('workspace_id', workspaceId)
         .order('created_at', { ascending: false });
 
       if (leadsError) {
@@ -25,6 +35,7 @@ export default function LeadList({ onSelectLead, selectedLead }) {
             .from('messages')
             .select('content')
             .eq('lead_id', lead.id)
+            .eq('workspace_id', workspaceId)
             .order('created_at', { ascending: false })
             .limit(1);
           return { leadId: lead.id, lastMessage: msgData?.[0]?.content || 'No messages' };

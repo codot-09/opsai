@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabase.js';
+import { getCurrentWorkspaceId } from '../lib/workspace.js';
 import CommandInput from '../components/CommandInput.jsx';
 import CommandThread from '../components/CommandThread.jsx';
 
@@ -12,11 +13,20 @@ export default function Chat() {
   const fetchCommands = async () => {
     try {
       setError(null);
+
+      // Get current workspace
+      const { workspaceId, error: workspaceError } = await getCurrentWorkspaceId();
+      if (workspaceError || !workspaceId) {
+        setError(workspaceError || 'Unable to load workspace');
+        return;
+      }
+
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const { data, error: fetchError } = await supabase
         .from('commands')
         .select('*')
+        .eq('workspace_id', workspaceId)
         .gte('created_at', today.toISOString())
         .order('created_at', { ascending: true });
 
@@ -37,59 +47,68 @@ export default function Chat() {
   useEffect(() => {
     fetchCommands();
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const setupSubscription = async () => {
+      const { workspaceId, error: workspaceError } = await getCurrentWorkspaceId();
+      if (workspaceError || !workspaceId) {
+        return;
+      }
 
-    const commandsChannel = supabase
-      .channel('commands_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'commands',
-          filter: `created_at=gte.${today.toISOString()}`,
-        },
-        (payload) => {
-          if (payload.eventType === 'INSERT') {
-            setCommands((prev) => [...prev, payload.new]);
-          } else if (payload.eventType === 'UPDATE') {
-            setCommands((prev) =>
-              prev.map((cmd) => (cmd.id === payload.new.id ? payload.new : cmd))
-            );
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const commandsChannel = supabase
+        .channel('commands_changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'commands',
+            filter: `workspace_id=eq.${workspaceId}`,
+          },
+          (payload) => {
+            if (payload.eventType === 'INSERT') {
+              setCommands((prev) => [...prev, payload.new]);
+            } else if (payload.eventType === 'UPDATE') {
+              setCommands((prev) =>
+                prev.map((cmd) => (cmd.id === payload.new.id ? payload.new : cmd))
+              );
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe();
 
+      return () => {
+        supabase.removeChannel(commandsChannel);
+      };
+    };
+
+    const cleanup = setupSubscription();
     return () => {
-      supabase.removeChannel(commandsChannel);
+      cleanup?.then?.(fn => fn?.());
     };
   }, []);
 
   const handleCommandSubmit = async (commandText) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const workspaceSlug = session?.user
-        ? await (async () => {
-            const { data, error } = await supabase
-              .from('workspaces')
-              .select('slug')
-              .eq('owner_id', session.user.id)
-              .maybeSingle();
-            if (error) {
-              console.error('Unable to resolve workspace slug:', error);
-              return null;
-            }
-            return data?.slug ?? null;
-          })()
-        : null;
+      if (!session?.user) {
+        console.error('No authenticated user');
+        return;
+      }
+
+      // Get current workspace
+      const { workspaceId, error: workspaceError } = await getCurrentWorkspaceId();
+      if (workspaceError || !workspaceId) {
+        console.error('Unable to get workspace:', workspaceError);
+        return;
+      }
 
       const response = await fetch('http://localhost:8000/commands', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          workspace_slug: workspaceSlug,
+          workspace_id: workspaceId,
           user_input: commandText,
         }),
       });

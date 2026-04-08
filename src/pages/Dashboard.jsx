@@ -5,6 +5,7 @@ import Card from '../components/Card.jsx';
 import Chart from '../components/Chart.jsx';
 import Table from '../components/Table.jsx';
 import { supabase } from '../lib/supabase.js';
+import { getCurrentWorkspaceId } from '../lib/workspace.js';
 
 const formatLabel = (date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
@@ -17,9 +18,18 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+
+      // Get current workspace
+      const { workspaceId, error: workspaceError } = await getCurrentWorkspaceId();
+      if (workspaceError || !workspaceId) {
+        setError(workspaceError || 'Unable to load workspace');
+        setLoading(false);
+        return;
+      }
+
       const [leadsRes, messagesRes] = await Promise.all([
-        supabase.from('leads').select('*').order('created_at', { ascending: false }),
-        supabase.from('messages').select('*')
+        supabase.from('leads').select('*').eq('workspace_id', workspaceId).order('created_at', { ascending: false }),
+        supabase.from('messages').select('*').eq('workspace_id', workspaceId)
       ]);
 
       if (leadsRes.error) {

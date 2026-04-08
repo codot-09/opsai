@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase.js';
+import { getCurrentWorkspaceId } from '../lib/workspace.js';
 import TaskRow from './TaskRow.jsx';
 
 export default function TaskTable() {
@@ -13,9 +14,17 @@ export default function TaskTable() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      
+      const workspaceId = await getCurrentWorkspaceId();
+      if (!workspaceId) {
+        console.error('No workspace found');
+        setLoading(false);
+        return;
+      }
+      
       const [tasksRes, commandsRes] = await Promise.all([
-        supabase.from('tasks').select('*').order('created_at', { ascending: false }),
-        supabase.from('commands').select('*')
+        supabase.from('tasks').select('*').eq('workspace_id', workspaceId).order('created_at', { ascending: false }),
+        supabase.from('commands').select('*').eq('workspace_id', workspaceId)
       ]);
 
       if (tasksRes.error) {

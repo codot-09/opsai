@@ -8,26 +8,44 @@ export default function Login() {
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        // Check if user has a workspace
-        const { data: workspaces, error } = await supabase
-          .from('workspaces')
-          .select('id')
-          .eq('owner_id', session.user.id)
-          .limit(1);
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-        if (error) {
-          console.error('Error checking workspace:', error);
-          // If error checking workspace, redirect to workspace creation
-          navigate('/workspace', { replace: true });
-        } else if (workspaces && workspaces.length > 0) {
-          // User has workspace, redirect to dashboard
-          navigate('/dashboard', { replace: true });
-        } else {
-          // New user, redirect to workspace creation
-          navigate('/workspace', { replace: true });
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          return;
         }
+
+        if (session?.user) {
+          // Validate user has required fields
+          if (!session.user.id) {
+            console.error('User missing ID');
+            navigate('/login', { replace: true });
+            return;
+          }
+
+          // Check if user has a workspace
+          const { data: workspaces, error } = await supabase
+            .from('workspaces')
+            .select('id')
+            .eq('owner_id', session.user.id)
+            .limit(1);
+
+          if (error) {
+            console.error('Error checking workspace:', error);
+            // If error checking workspace, redirect to workspace creation
+            navigate('/workspace', { replace: true });
+          } else if (workspaces && workspaces.length > 0) {
+            // User has workspace, redirect to dashboard
+            navigate('/dashboard', { replace: true });
+          } else {
+            // New user, redirect to workspace creation
+            navigate('/workspace', { replace: true });
+          }
+        }
+      } catch (err) {
+        console.error('Unexpected error in session check:', err);
+        navigate('/login', { replace: true });
       }
     };
 

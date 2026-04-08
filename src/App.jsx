@@ -18,24 +18,45 @@ function RootRedirect() {
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        // Check if user has a workspace
-        const { data: workspaces, error } = await supabase
-          .from('workspaces')
-          .select('id')
-          .eq('owner_id', session.user.id)
-          .limit(1);
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
-        if (error) {
-          console.error('Error checking workspace:', error);
-          navigate('/workspace', { replace: true });
-        } else if (workspaces && workspaces.length > 0) {
-          navigate('/dashboard', { replace: true });
-        } else {
-          navigate('/workspace', { replace: true });
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          navigate('/login', { replace: true });
+          setLoading(false);
+          return;
         }
-      } else {
+
+        if (session?.user) {
+          // Validate user has required fields
+          if (!session.user.id) {
+            console.error('User missing ID');
+            navigate('/login', { replace: true });
+            setLoading(false);
+            return;
+          }
+
+          // Check if user has a workspace
+          const { data: workspaces, error } = await supabase
+            .from('workspaces')
+            .select('id')
+            .eq('owner_id', session.user.id)
+            .limit(1);
+
+          if (error) {
+            console.error('Error checking workspace:', error);
+            navigate('/workspace', { replace: true });
+          } else if (workspaces && workspaces.length > 0) {
+            navigate('/dashboard', { replace: true });
+          } else {
+            navigate('/workspace', { replace: true });
+          }
+        } else {
+          navigate('/login', { replace: true });
+        }
+      } catch (err) {
+        console.error('Unexpected error in session check:', err);
         navigate('/login', { replace: true });
       }
       setLoading(false);

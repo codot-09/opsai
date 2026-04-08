@@ -71,18 +71,77 @@ export default function Workspace() {
       return;
     }
 
-    setLoading(true);
-    const { error: insertError } = await supabase
-      .from('workspaces')
-      .insert([{ name: workspaceName.trim(), slug: slug.trim(), owner_id: user.id }]);
-    setLoading(false);
-
-    if (insertError) {
-      setError(insertError.message);
+    // Double-check user is authenticated
+    if (!user) {
+      setError('User not authenticated. Please sign in again.');
+      navigate('/login', { replace: true });
       return;
     }
 
-    navigate('/dashboard', { replace: true });
+    setLoading(true);
+
+    try {
+      // Check again if user already has a workspace (race condition protection)
+      const { data: existingWorkspaces, error: checkError } = await supabase
+        .from('workspaces')
+        .select('id')
+        .eq('owner_id', user.id)
+        .limit(1);
+
+      if (checkError) {
+        setError('Unable to verify workspace status. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      if (existingWorkspaces && existingWorkspaces.length > 0) {
+        // User already has a workspace, redirect to dashboard
+        navigate('/dashboard', { replace: true });
+        return;
+      }
+
+      // Check if slug is already taken
+      const { data: slugCheck, error: slugError } = await supabase
+        .from('workspaces')
+        .select('id')
+        .eq('slug', slug.trim())
+        .limit(1);
+
+      if (slugError) {
+        setError('Unable to verify workspace slug availability.');
+        setLoading(false);
+        return;
+      }
+
+      if (slugCheck && slugCheck.length > 0) {
+        setError('This workspace slug is already taken. Please choose a different one.');
+        setLoading(false);
+        return;
+      }
+
+      // Create the workspace
+      const { error: insertError } = await supabase
+        .from('workspaces')
+        .insert([{
+          name: workspaceName.trim(),
+          slug: slug.trim(),
+          owner_id: user.id
+        }]);
+
+      if (insertError) {
+        console.error('Workspace creation error:', insertError);
+        setError(insertError.message || 'Failed to create workspace. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      // Success - redirect to dashboard
+      navigate('/dashboard', { replace: true });
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      setError('An unexpected error occurred. Please try again.');
+      setLoading(false);
+    }
   };
 
   return (

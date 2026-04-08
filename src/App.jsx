@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { supabase } from './lib/supabase.js';
+import { AppProviders } from './contexts/AuthContext.jsx';
 import Login from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Leads from './pages/Leads.jsx';
@@ -18,26 +19,13 @@ function RootRedirect() {
 
   useEffect(() => {
     let timeoutId;
+    let sessionRestored = false;
 
-    const checkSession = async () => {
+    const checkSession = async (session) => {
+      if (sessionRestored) return;
+
       try {
-        // Set a timeout to prevent hanging
-        timeoutId = setTimeout(() => {
-          console.warn('Session check timeout, redirecting to login');
-          navigate('/login', { replace: true });
-          setLoading(false);
-        }, 10000); // 10 second timeout
-
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
         clearTimeout(timeoutId);
-
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          navigate('/login', { replace: true });
-          setLoading(false);
-          return;
-        }
 
         if (session?.user) {
           // Validate user has required fields
@@ -66,18 +54,60 @@ function RootRedirect() {
         } else {
           navigate('/login', { replace: true });
         }
+
+        sessionRestored = true;
+        setLoading(false);
       } catch (err) {
         console.error('Unexpected error in session check:', err);
         clearTimeout(timeoutId);
         navigate('/login', { replace: true });
+        setLoading(false);
+        sessionRestored = true;
       }
-      setLoading(false);
     };
 
-    checkSession();
+    // Set a timeout to prevent hanging
+    timeoutId = setTimeout(() => {
+      if (!sessionRestored) {
+        console.warn('Session restoration timeout, redirecting to login');
+        navigate('/login', { replace: true });
+        setLoading(false);
+        sessionRestored = true;
+      }
+    }, 10000); // 10 second timeout
+
+    // Listen for auth state changes (including initial session restoration)
+    const { data: subscription } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Root redirect auth state change:', event, session?.user?.id);
+      await checkSession(session);
+    });
+
+    // Also try to get the current session immediately
+    const getInitialSession = async () => {
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error('Session error:', sessionError);
+          await checkSession(null);
+        } else {
+          await checkSession(session);
+        }
+      } catch (err) {
+        console.error('Error getting initial session:', err);
+        await checkSession(null);
+      }
+    };
+
+    getInitialSession();
 
     return () => {
       clearTimeout(timeoutId);
+      if (subscription?.unsubscribe) {
+        subscription.unsubscribe();
+      } else if (subscription?.subscription?.unsubscribe) {
+        subscription.subscription.unsubscribe();
+      }
     };
   }, [navigate]);
 
@@ -95,20 +125,21 @@ function RootRedirect() {
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/auth/callback" element={<RootRedirect />} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <MainLayout>
-                <Dashboard />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
+      <AppProviders>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/auth/callback" element={<RootRedirect />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <Dashboard />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
         <Route
           path="/leads"
           element={
@@ -152,6 +183,7 @@ export default function App() {
         <Route path="/workspace" element={<Workspace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+    </AppProviders>
     </BrowserRouter>
   );
 }

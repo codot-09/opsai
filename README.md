@@ -5,12 +5,29 @@ A modern React-based SaaS application with workspace isolation, authentication, 
 ## Features
 
 - **Google OAuth Authentication** with secure session management
+- **Automatic Session Restoration** - User tokens and info persist across page refreshes
 - **Workspace-based Data Isolation** - Complete data separation between workspaces
 - **Real-time Updates** with Supabase subscriptions
 - **AI Command Interface** for task automation
 - **Lead Management** with conversation tracking
 - **Task Management** with Kanban board
 - **Professional UI** with light mode design and animations
+
+## Authentication Flow
+
+The app implements robust authentication with automatic session restoration:
+
+1. **Session Persistence**: User sessions are automatically restored on page refresh
+2. **Token Management**: JWT tokens are securely stored and managed by Supabase
+3. **Workspace Verification**: Users are automatically redirected to appropriate pages based on authentication and workspace status
+4. **Real-time Auth State**: Authentication state changes are handled in real-time across all components
+
+### Session Restoration Process
+
+- On page load, the app automatically attempts to restore the user's session from localStorage
+- Auth state changes are monitored in real-time
+- Users are seamlessly redirected to the appropriate page (dashboard, workspace setup, or login)
+- Loading states provide feedback during session restoration
 
 ## Tech Stack
 

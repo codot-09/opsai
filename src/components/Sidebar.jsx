@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Users, MessageSquare, CheckSquare, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, MessageSquare, CheckSquare, Settings, CreditCard } from 'lucide-react';
 
 const navItems = [
   { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
   { label: 'Leads', to: '/leads', icon: Users },
   { label: 'Chat', to: '/chat', icon: MessageSquare },
   { label: 'Tasks', to: '/tasks', icon: CheckSquare },
+  { label: 'Billing', to: '/subscription', icon: CreditCard },
   { label: 'Settings', to: '/settings', icon: Settings },
 ];
 

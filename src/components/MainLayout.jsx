@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase.js';
 import Sidebar from './Sidebar.jsx';
 import Topbar from './Topbar.jsx';
+import { useWorkspaceContext } from '../contexts/AuthContext.jsx';
 
 export default function MainLayout({ children }) {
   const [authUser, setAuthUser] = useState(null);
@@ -10,6 +11,7 @@ export default function MainLayout({ children }) {
   const [workspace, setWorkspace] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { workspace: contextWorkspace } = useWorkspaceContext();
 
   useEffect(() => {
     const loadWorkspaceInfo = async () => {
@@ -85,7 +87,8 @@ export default function MainLayout({ children }) {
         <div className="flex min-h-screen flex-1 flex-col">
           <Topbar
             user={profile ?? authUser}
-            workspaceName={workspace?.name ?? 'OpsAI Workspace'}
+            workspaceName={workspace?.name ?? contextWorkspace?.name ?? 'OpsAI Workspace'}
+            subscriptionStatus={workspace?.subscribed ?? contextWorkspace?.subscribed}
             onLogout={handleLogout}
           />
           <main className="flex-1 overflow-hidden px-4 py-6 md:px-8 md:py-8">{children}</main>

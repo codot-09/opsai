@@ -27,19 +27,21 @@ export default function Login() {
           // Check if user has a workspace
           const { data: workspaces, error } = await supabase
             .from('workspaces')
-            .select('id')
+            .select('id, subscribed')
             .eq('owner_id', session.user.id)
             .limit(1);
 
           if (error) {
             console.error('Error checking workspace:', error);
-            // If error checking workspace, redirect to workspace creation
             navigate('/workspace', { replace: true });
           } else if (workspaces && workspaces.length > 0) {
-            // User has workspace, redirect to dashboard
-            navigate('/dashboard', { replace: true });
+            const workspace = workspaces[0];
+            if (workspace.subscribed === true) {
+              navigate('/dashboard', { replace: true });
+            } else {
+              navigate('/subscription', { replace: true });
+            }
           } else {
-            // New user, redirect to workspace creation
             navigate('/workspace', { replace: true });
           }
         }

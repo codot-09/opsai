@@ -39,7 +39,12 @@ export default function Workspace() {
       if (error) {
         console.error('Error checking workspace:', error);
       } else if (workspaces && workspaces.length > 0) {
-        navigate('/dashboard', { replace: true });
+        const existing = workspaces[0];
+        if (existing.subscribed === true) {
+          navigate('/dashboard', { replace: true });
+        } else {
+          navigate('/subscription', { replace: true });
+        }
         return;
       }
 
@@ -125,7 +130,8 @@ export default function Workspace() {
         .insert([{
           name: workspaceName.trim(),
           slug: slug.trim(),
-          owner_id: user.id
+          owner_id: user.id,
+          subscribed: false,
         }]);
 
       if (insertError) {
@@ -135,8 +141,8 @@ export default function Workspace() {
         return;
       }
 
-      // Success - redirect to dashboard
-      navigate('/dashboard', { replace: true });
+      // Success - redirect to subscription page for payment
+      navigate('/subscription', { replace: true });
     } catch (err) {
       console.error('Unexpected error:', err);
       setError('An unexpected error occurred. Please try again.');

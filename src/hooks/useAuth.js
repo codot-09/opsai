@@ -79,43 +79,43 @@ export const useWorkspace = () => {
   const [workspaceLoading, setWorkspaceLoading] = useState(false);
   const [workspaceError, setWorkspaceError] = useState(null);
 
-  useEffect(() => {
+  const fetchWorkspace = async () => {
     if (!isAuthenticated || !user) {
       setWorkspace(null);
       setWorkspaceError(null);
       return;
     }
 
-    const fetchWorkspace = async () => {
-      setWorkspaceLoading(true);
-      setWorkspaceError(null);
+    setWorkspaceLoading(true);
+    setWorkspaceError(null);
 
-      try {
-        const { data, error } = await supabase
-          .from('workspaces')
-          .select('*')
-          .eq('owner_id', user.id)
-          .single();
+    try {
+      const { data, error } = await supabase
+        .from('workspaces')
+        .select('*')
+        .eq('owner_id', user.id)
+        .single();
 
-        if (error) {
-          if (error.code === 'PGRST116') {
-            // No workspace found
-            setWorkspace(null);
-          } else {
-            setWorkspaceError(error.message);
-            setWorkspace(null);
-          }
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No workspace found
+          setWorkspace(null);
         } else {
-          setWorkspace(data);
+          setWorkspaceError(error.message);
+          setWorkspace(null);
         }
-      } catch (err) {
-        setWorkspaceError(err.message);
-        setWorkspace(null);
-      } finally {
-        setWorkspaceLoading(false);
+      } else {
+        setWorkspace(data);
       }
-    };
+    } catch (err) {
+      setWorkspaceError(err.message);
+      setWorkspace(null);
+    } finally {
+      setWorkspaceLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchWorkspace();
   }, [user, isAuthenticated]);
 
@@ -124,5 +124,8 @@ export const useWorkspace = () => {
     workspaceLoading,
     workspaceError,
     hasWorkspace: Boolean(workspace),
+    isSubscribed: workspace?.subscribed === true,
+    subscriptionStatus: workspace?.subscribed === true ? 'active' : 'inactive',
+    refreshWorkspace: fetchWorkspace,
   };
 };

@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuthContext, useWorkspaceContext } from '../contexts/AuthContext.jsx';
 
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute({ children, allowUnsubscribed = false }) {
   const { isAuthenticated, loading: authLoading } = useAuthContext();
-  const { hasWorkspace, workspaceLoading } = useWorkspaceContext();
+  const { hasWorkspace, workspaceLoading, isSubscribed } = useWorkspaceContext();
   const [authChecked, setAuthChecked] = useState(false);
   const [workspaceChecked, setWorkspaceChecked] = useState(false);
 
@@ -34,6 +34,14 @@ export default function ProtectedRoute({ children }) {
 
   if (!hasWorkspace) {
     return <Navigate to="/workspace" replace />;
+  }
+
+  if (!isSubscribed && !allowUnsubscribed) {
+    return <Navigate to="/subscription" replace />;
+  }
+
+  if (isSubscribed && allowUnsubscribed) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;
